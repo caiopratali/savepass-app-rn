@@ -29,15 +29,35 @@ export function Home() {
   const [data, setData] = useState<LoginListDataProps>([]);
 
   async function loadData() {
-    const dataKey = '@savepass:logins';
+    try {
+      const dataKey = '@savepass:logins';
+      const value = await AsyncStorage.getItem(dataKey);
+
+      if(!value) return;
+
+      const jsonValue = JSON.parse(value);
+      
+      setData(jsonValue);
+      setSearchListData(jsonValue);
+    } catch (error) {
+      console.error(error);
+    }
     // Get asyncStorage data, use setSearchListData and setData
   }
 
   function handleFilterLoginData() {
+    const list = searchListData.filter(item => item.service_name.includes(searchText)) 
+
+    if(list.length <= 0) return;
+
+    setSearchListData(list);
     // Filter results inside data, save with setSearchListData
   }
 
   function handleChangeInputText(text: string) {
+    if(!text || text === '') return;
+
+    setSearchText(text);
     // Update searchText value
   }
 
